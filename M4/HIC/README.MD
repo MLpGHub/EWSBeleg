@@ -29,4 +29,6 @@ Featured Design
  * Released under the MIT license
  * github.com/Octane/setImmediate
  
+ IndexedDB Package
+ https://github.com/jakearchibald/idb
 

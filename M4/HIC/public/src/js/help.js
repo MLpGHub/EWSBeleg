@@ -6,11 +6,7 @@ var closeCreatePostModalButton = document.querySelector('#close-create-post-moda
 
 
         function openEmailModal() {
-
-            if('material-icon'.match('email')) {
                 alert('Send an Email to : michael.leopold@mlphomeuse.de');
-            }
-
         }
         function openPhoneModal() {
 

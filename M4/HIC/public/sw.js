@@ -1,37 +1,35 @@
-
-var CACHE_STATIC_NAME = 'static-v7';
-var CACHE_DYNAMIC_NAME = 'dynamic-v7';
+var CACHE_STATIC_NAME = 'static-v2';
+var CACHE_DYNAMIC_NAME = 'dynamic-v2';
 var STATIC_FILES = [
     '/',
     '/index.html',
     '/offline.html',
-    '/src/css/app.css',
-    '/src/css/feed.css',
-    '/src/css/help.css',
-    '/src/images/main-image.jpg',
     '/src/js/app.js',
     '/src/js/feed.js',
-    '/src/js/help.js',
     '/src/js/promise.js',
     '/src/js/fetch.js',
     '/src/js/material.min.js',
+    '/src/css/app.css',
+    '/src/css/feed.css',
+    '/src/images/main-image.jpg',
     'https://fonts.googleapis.com/css?family=Roboto:400,700',
     'https://fonts.googleapis.com/icon?family=Material+Icons',
     'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
 ];
-// HOW TO trim Cache
-// function trimCache (cacheName, maxItems){
-//     caches.open(cacheName)
-//         .then(function(cache){
-//             return cache.keys()
-//                 .then(function(keys){
-//                     if(keys.length > maxItems){
-//                         cache.delete(keys[0])
-//                             .then(trimCache(cacheName, maxItems));
-//                     }
-//                 });
-//         })
+
+// function trimCache(cacheName, maxItems) {
+//   caches.open(cacheName)
+//     .then(function (cache) {
+//       return cache.keys()
+//         .then(function (keys) {
+//           if (keys.length > maxItems) {
+//             cache.delete(keys[0])
+//               .then(trimCache(cacheName, maxItems));
+//           }
+//         });
+//     })
 // }
+
 self.addEventListener('install', function (event) {
     console.log('[Service Worker] Installing Service Worker ...', event);
     event.waitUntil(
@@ -69,55 +67,53 @@ function isInArray(string, array) {
     }
     return array.indexOf(cachePath) > -1;
 }
+self.addEventListener('fetch', function (event) {
 
-    // CACHE then Network % Dynamic Caching + Offline Support
-self.addEventListener('fetch', function(event) {
-   var url = 'https://httpbin.org/get';
-   if (event.request.url.indexOf(url) > -1){ //Cache then Network
-       event.respondWith(
-           caches.open(CACHE_DYNAMIC_NAME)
-               .then(function(cache){
-                   return fetch(event.request)
-                       .then(function(res){
-                          // trimCache(CACHE_DYNAMIC_NAME, 3);
-                           cache.put(event.request, res.clone());
-                           return res;
-                       })
-               })
-       );
-   } else if (isInArray(event.request.url, STATIC_FILES)) {
-       event.respondWith(
-           caches.match(event.request)
-       );
-   } else { //Network fallback Strategy
-       event.respondWith(
-           caches.match(event.request)
-               .then(function(response) {
-                   if (response) {
-                       return response;
-                   } else {
-                       return fetch(event.request)
-                           .then(function(res) {
-                               return caches.open(CACHE_DYNAMIC_NAME)
-                                   .then(function(cache) {
-                                       cache.put(event.request.url, res.clone());
-                                       return res;
-                                   })
-                           })
-                           .catch(function(err) {
-                               return caches.open(CACHE_STATIC_NAME)
-                                   .then(function(cache) {
-                                       if (event.request.headers.get('accept').includes('text/html')){
-                                           return cache.match('/offline.html');
-                                       }
-                                   });
-                           });
-                   }
-               })
-       );
-   }
-});
-
+    var url = 'https://heyic-d4dff.firebaseio.com/posts.json';
+    if (event.request.url.indexOf(url) > -1) {
+        event.respondWith(
+            caches.open(CACHE_DYNAMIC_NAME)
+                .then(function (cache) {
+                    return fetch(event.request)
+                        .then(function (res) {
+                            // trimCache(CACHE_DYNAMIC_NAME, 3);
+                            cache.put(event.request, res.clone());
+                            return res;
+                        });
+                })
+        );
+    } else if (isInArray(event.request.url, STATIC_FILES)) {
+        event.respondWith(
+            caches.match(event.request)
+        );
+    } else {
+        event.respondWith(
+            caches.match(event.request)
+                .then(function (response) {
+                    if (response) {
+                        return response;
+                    } else {
+                        return fetch(event.request)
+                            .then(function (res) {
+                                return caches.open(CACHE_DYNAMIC_NAME)
+                                    .then(function (cache) {
+                                        // trimCache(CACHE_DYNAMIC_NAME, 3);
+                                        cache.put(event.request.url, res.clone());
+                                        return res;
+                                    })
+                            })
+                            .catch(function (err) {
+                                return caches.open(CACHE_STATIC_NAME)
+                                    .then(function (cache) {
+                                        if (event.request.headers.get('accept').includes('text/html')) {
+                                            return cache.match('/offline.html');
+                                        }
+                                    });
+                            });
+                    }
+                })
+        );
+    }});
 //   // CACHE Strategy - Cache then Network
 // self.addEventListener('fetch', function(event) {
 //     event.respondWith(

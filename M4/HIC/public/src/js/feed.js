@@ -14,14 +14,12 @@ function openCreatePostModal() {
 
     deferredPrompt.userChoice.then(function(choiceResult) {
       console.log(choiceResult.outcome);
-
       if (choiceResult.outcome === 'dismissed') {
         console.log('User cancelled installation');
       } else {
         console.log('User added to home screen');
       }
     });
-
     deferredPrompt = null;
   }
   // HOW TO unregister a service worker
@@ -55,33 +53,31 @@ function onSaveButtonClicked(event) {
       });
   }
 }
+
 function clearCards(){
   while(sharedMomentsArea.hasChildNodes()){
     sharedMomentsArea.removeChild(sharedMomentsArea.lastChild);
   }
 }
-function createCard() {
+function createCard(data) {
   var cardWrapper = document.createElement('div');
   cardWrapper.className = 'shared-moment-card mdl-card mdl-shadow--2dp';
   var cardTitle = document.createElement('div');
   cardTitle.className = 'mdl-card__title';
-  cardTitle.style.textAlign = 'center';
-  cardTitle.style.backgroundImage = 'url("/src/images/blockchain_612x612.jpg")';
+  cardTitle.style.backgroundImage = 'url(' + data.image + ')';
   cardTitle.style.backgroundSize = 'cover';
-  cardTitle.style.height = '270px';
-  cardTitle.style.backgroundPosition ='bottom';
+  cardTitle.style.height = '400px';
+  cardTitle.style.backgroundPosition = 'bottom';
   cardWrapper.appendChild(cardTitle);
   var cardTitleTextElement = document.createElement('h2');
-  cardTitleTextElement.style.alignContent = "center";
   cardTitleTextElement.style.color = 'white';
   cardTitleTextElement.className = 'mdl-card__title-text';
-  cardTitleTextElement.textContent = '';
+  cardTitleTextElement.textContent = data.title;
   cardTitle.appendChild(cardTitleTextElement);
   var cardSupportingText = document.createElement('div');
   cardSupportingText.className = 'mdl-card__supporting-text';
-  cardSupportingText.textContent = 'Made in Germany';
+  cardSupportingText.textContent = data.day+' - ' + data.location  ;
   cardSupportingText.style.textAlign = 'center';
-  cardSupportingText.style.backgroundColor = '#FFFFFF';
   // var cardSaveButton = document.createElement('button');
   // cardSaveButton.textContent = 'Save';
   // cardSaveButton.addEventListener('click', onSaveButtonClicked);
@@ -91,31 +87,47 @@ function createCard() {
   sharedMomentsArea.appendChild(cardWrapper);
 }
 
-var url = 'https://httpbin.org/get';
+function updateUI(data) {
+  clearCards();
+  for (var i = 0; i < data.length; i++) {
+    createCard(data[i]);
+  }
+}
+
+
+//var url = 'https://httpbin.org/get';
+var url = 'https://heyic-d4dff.firebaseio.com/posts.json';
 var networkDataReceived = false;
 fetch(url)
     .then(function(res) {
       return res.json();
     })
     .then(function(data) {
-      networkDataReceived =true;
+      networkDataReceived = true;
       console.log('From web', data);
-      clearCards();
-      createCard();
+      var dataArray = [];
+      for (var key in data) {
+        dataArray.push(data[key]);
+      }
+      updateUI(dataArray);
     });
+
 if ('caches' in window) {
   caches.match(url)
-      .then(function(response){
-        if (response){
-          response.json();
+      .then(function(response) {
+        if (response) {
+          return response.json();
         }
       })
-      .then(function(data){
+      .then(function(data) {
         console.log('From cache', data);
-       if (!networkDataReceived) {
-         clearCards();
-         createCard();
-       }
+        if (!networkDataReceived) {
+          var dataArray = [];
+          for (var key in data) {
+            dataArray.push(data[key]);
+          }
+          updateUI(dataArray)
+        }
       });
 }
 
