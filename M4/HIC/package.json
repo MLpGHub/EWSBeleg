@@ -1,7 +1,7 @@
 {
-  "name": "PWAServer",
+  "name": "pwa-complete-guide",
   "version": "1.0.0",
-  "description": "Server for PWA",
+  "description": "A complete guide to PWAs. Building a simple Instagram clone.",
   "main": "index.js",
   "scripts": {
     "start": "http-server -c-1"
@@ -14,9 +14,9 @@
     "complete",
     "tutorial"
   ],
-  "author": "Michael Leopold",
+  "author": "Maximilian Schwarzmüller",
   "license": "ISC",
   "devDependencies": {
-    "http-server": "^0.11.1"
+    "http-server": "^0.10.0"
   }
 }
