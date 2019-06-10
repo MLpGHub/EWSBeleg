@@ -2,6 +2,9 @@ var shareImageButton = document.querySelector('#share-image-button');
 var createPostArea = document.querySelector('#create-post');
 var closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
 var sharedMomentsArea = document.querySelector('#shared-moments');
+var form = document.querySelector('form');
+var titleinput = document.querySelector('#title');
+var locationinput = document.querySelector('#location');
 
 function openCreatePostModal() {
   createPostArea.style.display = 'block';
@@ -112,22 +115,81 @@ fetch(url)
       updateUI(dataArray);
     });
 
-if ('caches' in window) {
-  caches.match(url)
-      .then(function(response) {
-        if (response) {
-          return response.json();
-        }
-      })
-      .then(function(data) {
-        console.log('From cache', data);
-        if (!networkDataReceived) {
-          var dataArray = [];
-          for (var key in data) {
-            dataArray.push(data[key]);
-          }
-          updateUI(dataArray)
+if ('indexedDB' in window) {
+  // caches.match(url)
+  //     .then(function(response) {
+  //       if (response) {
+  //         return response.json();
+  //       }
+  //     })
+  //     .then(function(data) {
+  //       console.log('From cache', data);
+  //       if (!networkDataReceived) {
+  //         var dataArray = [];
+  //         for (var key in data) {
+  //           dataArray.push(data[key]);
+  //         }
+  //         updateUI(dataArray)
+  //       }
+  //     });
+  readAllData('posts')
+      .then(function(data){
+        if(!networkDataReceived){
+          console.log('From cache',data);
+          updateUI(data);
         }
       });
 }
 
+function sendData(){
+fetch('https://heyic-d4dff.firebaseio.com/posts.json',{
+  method: 'POST',
+  header:{
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  },
+  body: JSON.stringify({
+    id: new Date().toISOString(),
+    title: titleinput.value,
+    location: locationinput,
+    image: 'https://firebasestorage.googleapis.com/v0/b/heyic-d4dff.appspot.com/o/MainD2D2.jpg?alt=media&token=ab9101e6-31ba-4af2-9b31-bec7a358a6de'
+  })
+})
+    .then(function(res){
+      console.log('Sent data', res);
+      updateUI();
+    })
+}
+
+form.addEventListener('subnmit',function(event){
+  event.preventDefault();
+  if(titleinput.value.trim() === '' || locationinput.value.trim() === ''){
+    alert('Please insert valid data!');
+    return;
+  }
+  closeCreatePostModal();
+  if('serviceWorker' in navigator && 'SyncManager' in window){
+    navigator.serviceWorker.ready
+        .then(function(sw){
+          var post ={
+            id: new Date().toISOString(),
+            title: titleinput.value,
+            location: locationinput.value
+          };
+          writeData('sync-posts',post)
+              .then(function(){
+                sw.sync.register('sync-new-post');
+              })
+              .then(function(){
+                var snackbarContainer = document.querySelector('#confirmation-toast');
+                var data = {message:'Your Post was saved for syncing'};
+                snackbarContainer.MaterialSnackbar.showSnackbar(data);
+              })
+              .catch(function (err){
+                consolelog(err);
+              });
+        });
+  } else {
+    sendData();
+  }
+});
