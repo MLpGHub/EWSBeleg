@@ -1,8 +1,8 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v3';
-var CACHE_DYNAMIC_NAME = 'dynamic-v1';
+var CACHE_STATIC_NAME = 'static-v5';
+var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
     '/',
     '/index.html',
@@ -184,3 +184,40 @@ self.addEventListener('fetch', function (event) {
 //         fetch(event.request)
 //     );
 // });
+
+self.addEventListener('sync', function(){
+   console.log('[Service Worker] Background syncing!',event);
+   if (event.tag === 'sync-new-posts'){
+       console.log('[Service Worker] Syncing new Posts');
+       event.waitUntil(
+           readAllData('sync-posts')
+               .then(function (data) {
+                   for ( var dt of data) {
+                       fetch('https://heyic-d4dff.firebaseio.com/posts.json', {
+                           method: 'POST',
+                           header: {
+                               'Content-Type': 'application/json',
+                               'Accept': 'application/json'
+                           },
+                           body: JSON.stringify({
+                               id: dt.id,
+                               title: dt.title,
+                               location: dt.location,
+                               image: 'https://firebasestorage.googleapis.com/v0/b/heyic-d4dff.appspot.com/o/MainD2D2.jpg?alt=media&token=ab9101e6-31ba-4af2-9b31-bec7a358a6de'
+                           })
+                       })
+                           .then(function (res) {
+                               console.log('Sent data', res);
+                               if (res.ok) {
+                                   deleteItemFromData('sync-posts', dt.id);
+                               }
+                           })
+                           .catch(function(err){
+                                   console.log('Error while sending data',err);
+                           });
+                        // updateUI();
+                   }
+               })
+       );
+   }
+});

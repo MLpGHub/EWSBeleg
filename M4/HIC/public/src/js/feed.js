@@ -178,7 +178,7 @@ form.addEventListener('subnmit',function(event){
           };
           writeData('sync-posts',post)
               .then(function(){
-                sw.sync.register('sync-new-post');
+                sw.sync.register('sync-new-posts');
               })
               .then(function(){
                 var snackbarContainer = document.querySelector('#confirmation-toast');
