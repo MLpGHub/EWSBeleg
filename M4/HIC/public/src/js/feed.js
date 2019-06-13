@@ -161,7 +161,7 @@ fetch('https://heyic-d4dff.firebaseio.com/posts.json',{
     })
 }
 
-form.addEventListener('subnmit',function(event){
+form.addEventListener('submit',function(event){
   event.preventDefault();
   if(titleinput.value.trim() === '' || locationinput.value.trim() === ''){
     alert('Please insert valid data!');
