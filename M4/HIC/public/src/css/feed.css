@@ -22,22 +22,18 @@
   transition: 0.8s;
 }
 
-.btn1,.btn2{
+.btn1,.btn2,.btn3,.btn4{
   color: #ff4081;
 }
-.btn3,.btn4{
-  color: #ff4081;
-}
-.btn1:hover,.btn2:hover{
+
+.btn1:hover,.btn2:hover,.btn3:hover,.btn4:hover{
   color: #000;
 }
-.btn3:hover,.btn4:hover{
-  color: #ff4081;
-}
+
 .btn::before{
   content:"";
   left:0;
-  position: absolute;
+  position: relative;
   width: 100%;
   height: 0;
   background: #ff4081;
