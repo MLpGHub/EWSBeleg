@@ -1,9 +1,9 @@
 #create-post {
   z-index: 1001;
-  position: fixed;
+  position: relative;
   width: 100%;
   min-height: 100vh;
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
   bottom: 0;
   top: 56px;
   background: white;
@@ -12,52 +12,65 @@
   transform: translateY(100vh);
   transition: transform 0.3s;
 }
-.btn{
-  border: 1px solid #ff4081;
-  background: black;
-  padding: 10px 20px;
-  font-size: 20px;
+
+.button{
+  display: inline-block;
+}
+.btn-group .button {
+  text-decoration: none;
   cursor: pointer;
-  margin: 10px;
-  transition: 0.8s;
+  width: 150px;
+  display: inline;
+  padding: 15px 25px;
+  font-size: 24px;
+  text-align: center;
+  outline: none;
+  color: #fff;
+  background-color: #ff4081;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #000000;
 }
 
-.btn1,.btn2,.btn3,.btn4{
-  color: #ff4081;
+.btn-group .button:not(:last-child) {
+  border-bottom: none; /* Prevent double borders */
 }
 
-.btn1:hover,.btn2:hover,.btn3:hover,.btn4:hover{
-  color: #000;
+.btn-group .button:hover {
+  background-color: #000000;
 }
 
-.btn::before{
-  content:"";
-  left:0;
-  position: relative;
-  width: 100%;
-  height: 0;
-  background: #ff4081;
-  z-index: -1;
-  transition: 0.8s;
-}
-.btn1::before,.btn3::before{
-   top: 0;
-   border-radius: 0 0 50% 50%;
- }
-.btn2::before,.btn4::before{
-  bottom: 0;
-  border-radius: 50% 50% 0 0;
-}
-.btn3::before,.btn4::before{
-height: 180%;
-}
-.btn1:hover::before,.btn2:hover::before{
-height: 180%;
-} /*https://www.youtube.com/watch?v=MLfAW55_4cY*/
-.btn3:hover::before,.btn4:hover::before{
-height: 0;
+.btn-group2 .button {
+  text-decoration: none;
+  cursor: pointer;
+  width: 150px;
+  display: inline;
+  padding: 15px 25px;
+  font-size: 24px;
+  text-align: center;
+  outline: none;
+  color: #fff;
+  background-color: #ff4081;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #000000;
+
 }
 
+.btn-group2 .button:not(:last-child) {
+  border-bottom: none; /* Prevent double borders */
+}
+
+.btn-group2 .button:hover {
+  background-color: #000000;
+}
+
+
+.button:active {
+  background-color: #ff4081;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
 .main-image {
   max-width: 100%;
   margin: auto;
@@ -189,32 +202,12 @@ input {
   }
 }
 /**/
-
-
-@media (min-width: 600px){
+@media (max-width: 600px){
   shared-moment-card.mdl-card {
-    width: 60%;
+    width: 628px;
   }
-}
-@media (min-width: 1000px){
-    shared-moment-card.mdl-card {
-      width: 50%;
-    }
 }
 shared-moment-card .mdl-card__title{
   height: 350px;
 
-}
-
-@media (min-height: 700px){
-  hared-moment-card .mdl-card__title{
-    height: 400px;
-
-  }
-}
-@media (min-height: 1000px){
-  hared-moment-card .mdl-card__title{
-    height: 600px;
-
-  }
 }
