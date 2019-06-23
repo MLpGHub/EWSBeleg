@@ -46,22 +46,47 @@ function displayConfirmNotification(){
     }
 }
 
-function configurePushSub(){
-    if(!('serviceWorker' in navigator)){return;} //not needed
+function configurePushSub() {
+    if (!('serviceWorker' in navigator)) {
+        return;
+    }
 
     var reg;
     navigator.serviceWorker.ready
-        .then(function(swreg){
-            reg= swreg;
-           swreg.pushManager.getSubscription();
+        .then(function(swreg) {
+            reg = swreg;
+            return swreg.pushManager.getSubscription();
         })
-        .then(function(sub){
-            if(sub === null){//creating new sub
-                reg.pushManager.subscribe({
-                    userVisibleOnly: true
+        .then(function(sub) {
+            if (sub === null) {
+                // Create a new subscription
+                var vapidPublicKey = 'BP1W_rUqd1QmE88JWwBGqpPefA8rpheoz9CrrS2aRoQh1PDEnmf-H6Xl_nO13szK9V4TX-ZIsUsKauseVLg0fE8\n';
+                var convertedVapidPublicKey = urlBase64ToUint8Array(vapidPublicKey);
+                return reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: convertedVapidPublicKey
                 });
-            }else{//Having a sub
+            } else {
+                // We have a subscription
             }
+        })
+        .then(function(newSub) {
+            return fetch('https://heyic-d4dff.firebaseio.com/subscriptions.json', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(newSub)
+            })
+        })
+        .then(function(res) {
+            if (res.ok) {
+                displayConfirmNotification();
+            }
+        })
+        .catch(function(err) {
+            console.log(err);
         });
 }
 

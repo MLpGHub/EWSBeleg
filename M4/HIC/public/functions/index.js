@@ -1,6 +1,7 @@
 var functions = require('firebase-functions');
 var admin = require('firebase-admin');
 var cors = require('cors') ({origin: true});
+var webpush = require('web-push');
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -20,11 +21,31 @@ exports.storePostData = functions.https.onRequest((request, response) => {
    image: request.body.image
   })
       .then(function() {
-       response.status(201).json({message: 'Data stored', id: request.body.id});
+          webpush.setVapidDetails('mailto:vultonios@gmail.com', 'BP1W_rUqd1QmE88JWwBGqpPefA8rpheoz9CrrS2aRoQh1PDEnmf-H6Xl_nO13szK9V4TX-ZIsUsKauseVLg0fE8','NDazJcyFEwiivUf7U4ZOoL7lHnMpcniGZ2hmcbTFDcE');
+          return admin.database().ref('subscriptions').once('value');
       })
-      .catch(function(err) {
-       response.status(500).json({error: err});
+      .then(function (subscriptions) {
+          subscriptions.forEach(function (sub) {
+              var pushConfig = {
+                  endpoint: sub.val().endpoint,
+                  keys: {
+                      auth: sub.val().keys.auth,
+                      p256dh: sub.val().keys.p256dh
+                  }
+              };
+              webpush.sendNotification(pushConfig, JSON.stringify({
+                  title: 'New Post',
+                  content: 'New Post added!',
+                  openUrl: '/help'
+              }))
+                  .catch(function(err) {
+                      console.log(err);
+                  })
+          });
+          response.status(201).json({message: 'Data stored', id: request.body.id});
+      })
+      .catch(function (err) {
+          response.status(500).json({error: err});
       });
  });
- });
-
+});

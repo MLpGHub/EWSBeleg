@@ -1,8 +1,8 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v2';
-var CACHE_DYNAMIC_NAME = 'dynamic-v2';
+var CACHE_STATIC_NAME = 'static-v7';
+var CACHE_DYNAMIC_NAME = 'dynamic-v7';
 var STATIC_FILES = [
     '/',
     '/index.html',
@@ -233,9 +233,42 @@ self.addEventListener('notificationclick',function(event){
         notification.close();
     }else {
        console.log(action);
-        notification.close();
+       event.waitUntil(
+           clients.matchAll()
+               .then(function(clis){
+                   var client = clis.find(function(c){
+                       return c.visibilityState === 'visible';
+                   });
+                   if (client !== undefined){
+                       client.navigate(notification.data.url);
+                       client.focus();
+                   }else {
+                       clients.openWindow(notification.data.url);
+                   }
+                   notification.close();
+               })
+       );
     }
 });
 self.addEventListener('notificationclose',function(event){
     console.log('Notification was closed',event);
+});
+
+self.addEventListener('push',function (event){
+    console.log('Push Notification recieved',event);
+    var data = {title: 'New', content: 'Something new happend',openUrl: '/'};
+    if(event.data){
+        data = JSON.parse(event.data.text());
+    }
+    var options ={
+        body: data.content,
+        icon: '/src/images/icons/app-icon-96x96.png',
+        badge: '/src/images/icons/app-icon-96x96.png',
+        data: {
+            url: data.openUrl
+        }
+    };
+    event.waitUntil(
+        self.registration.showNotification(data.title,options)
+    );
 });
