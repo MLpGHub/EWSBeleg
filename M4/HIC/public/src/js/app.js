@@ -1,6 +1,5 @@
-
 var deferredPrompt;
-
+var enableNotificationsButtons = document.querySelectorAll('.enable-notifications');
 if (!window.Promise) {
   window.Promise = Promise;
 }
@@ -23,121 +22,38 @@ window.addEventListener('beforeinstallprompt', function(event) {
   return false;
 });
 
-var categories = [
-  { name: "Länge", units: [
-      { name: "Millimeter", value: 1 },
-      { name: "Centimeter", value: 10 },
-      { name: "Dezimeter", value: 100 },
-      { name: "Meter", value:1000 },
-      { name: "Kilometer", value:1000000 }
-    ]},
-  { name: "Datengröße", units: [
-      { name: "Byte", value: 1 },
-      { name: "Kilobyte", value: 1000 },
-      { name: "Kibibyte", value: 1024 },
-      { name: "Megabyte", value: (1000 * 1000) },
-      { name: "Mebibyte", value: (1024 * 1024) },
-      { name: "Gigabyte", value: (1000 * 1000 * 1000) },
-      { name: "Gibibyte", value: (1024 * 1024 * 1024) }
-    ]},
-  { name: "Zeit", units: [
-      { name: "Millisekunde", value: 1 },
-      { name: "Sekunde", value: 1000 },
-      { name: "Minute", value: 60000 },
-      { name: "Stunde", value: 3600000 }
-    ]},
-  { name: "Fläche", units: [
-      { name: "Millimeter^2", value: 1 },
-      { name: "Centimeter^2", value: 100 },
-      { name: "Dezimeter^2", value: 10000 },
-      { name: "Meter^2", value: 1000000 },
-      { name: "Kilometer^2", value: 1000000000000 }
-    ]}
-];
-
-var sourcebefore, targetbefore;
-
-function onInit() {
-  var categorySelect = document.getElementById("categorySelect");
-
-  for (let i = 0; i < categories.length; i++) {
-    categorySelect.options[i] = new Option(categories[i].name, "cat" + (i + 1));
-  }
-  setSourceUnitOptions(categories[0].units);
-  setTargetUnitOptions(categories[0].units);
+function displayConfirmNotification(){
+    if('serviceWorker' in navigator){
+        var options ={
+            body: 'You successfully subscribed to our notification service!',
+            icon: '/src/images/icons/app-icon-96x96.png',
+            image: '/src/images/blockchain_612x612.jpg',
+            dir: 'ltr',
+            lang: 'en-US', //BCP 47
+            vibrate: [100,50,200],
+            badge: '/src/images/icons/app-icon-96x96.png'
+        };
+        navigator.serviceWorker.ready
+            .then(function(swreg){
+                swreg.showNotification('Successfully subscribed', options);
+            });
+    }
 }
 
-function onCategoryChanged(event) {
-  var units = categories[event.target.selectedIndex].units;
-
-  setSourceUnitOptions(units);
-  setTargetUnitOptions(units);
+function askForNotificationPermission(){
+    Notification.requestPermission(function (result){
+        console.log('User Choice', result);
+        if (result !== 'granted'){
+            console.log('No notification permission granted');
+        } else {
+            //Hide Button
+            displayConfirmNotification();
+        }
+    });
 }
-
-function setSourceUnitOptions(units) {
-  var element = document.getElementById("sourceUnitSelect");
-  setSelectOptions(element, units);
+if('Notification' in window){
+    for (var i =0; i <enableNotificationsButtons.length; i++){
+        enableNotificationsButtons[i].style.display = 'inline-block';
+        enableNotificationsButtons[i].addEventListener('click',askForNotificationPermission);
+    }
 }
-
-function setTargetUnitOptions(units) {
-  var element = document.getElementById("targetUnitSelect");
-  setSelectOptions(element, units);
-}
-
-function setSelectOptions(element, units) {
-  element.options.length = 0;
-
-  for (let i = 0; i < units.length; i++) {
-    element.options[i] = new Option(units[i].name, "option" + (i + 1));
-  }
-  if(element.id == "targetUnitSelect"){
-    element.selectedIndex = "1";
-  }
-  sourcebefore = document.getElementById("sourceUnitSelect").selectedIndex;
-  targetbefore = document.getElementById("targetUnitSelect").selectedIndex;
-
-}
-
-function calculate(event) {
-  var category, sourceUnit, targetUnit,
-      source, sourceVal, target, targetVal, x, y;
-  var temp;
-  var sourceIndex = document.getElementById("sourceUnitSelect").selectedIndex;
-  var targetIndex = document.getElementById("targetUnitSelect").selectedIndex;
-  category = categories[document.getElementById("categorySelect").selectedIndex];
-  sourceUnit = category.units[document.getElementById("sourceUnitSelect").selectedIndex];
-  targetUnit = category.units[document.getElementById("targetUnitSelect").selectedIndex];
-
-  if(sourceIndex == targetIndex){
-    sourceUnit = category.units[targetbefore];
-    targetUnit = category.units[sourcebefore];
-    document.getElementById("sourceUnitSelect").selectedIndex = targetbefore;
-    document.getElementById("targetUnitSelect").selectedIndex = sourcebefore;
-    temp = sourcebefore;
-    sourcebefore=targetbefore;
-    targetbefore=temp;
-  }
-  else{
-    sourcebefore = document.getElementById("sourceUnitSelect").selectedIndex;
-    targetbefore = document.getElementById("targetUnitSelect").selectedIndex;
-  }
-  source = document.getElementById((event.target.id == "right" ? "right" : "left"));
-  target = document.getElementById((source.id == "right" ? "left" : "right"));
-  sourceVal = source.value;
-
-  x = sourceUnit.value;
-  y = targetUnit.value;
-
-  if (source.id == "left") {
-    targetVal = sourceVal * (x / y);
-  }
-  else {
-    targetVal = sourceVal * (y / x);
-  }
-  if(sourceVal != "") {
-    target.value = targetVal;
-  }
-}
-
-
-

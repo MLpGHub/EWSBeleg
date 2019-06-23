@@ -3,8 +3,8 @@ var createPostArea = document.querySelector('#create-post');
 var closeCreatePostModalButton = document.querySelector('#close-create-post-modal-btn');
 var sharedMomentsArea = document.querySelector('#shared-moments');
 var form = document.querySelector('form');
-var titleinput = document.querySelector('#title');
-var locationinput = document.querySelector('#location');
+var titleInput = document.querySelector('#title');
+var locationInput = document.querySelector('#location');
 
 function openCreatePostModal() {
   createPostArea.style.display = 'block';
@@ -141,52 +141,52 @@ if ('indexedDB' in window) {
       });
 }
 
-function sendData(){
-fetch('https://heyic-d4dff.firebaseio.com/posts.json',{
-  method: 'POST',
-  header:{
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-  },
-  body: JSON.stringify({
-    id: new Date().toISOString(),
-    title: titleinput.value,
-    location: locationinput,
-    image: 'https://firebasestorage.googleapis.com/v0/b/heyic-d4dff.appspot.com/o/MainD2D2.jpg?alt=media&token=ab9101e6-31ba-4af2-9b31-bec7a358a6de'
-  })
-})
-    .then(function(res){
-      console.log('Sent data', res);
-      updateUI();
-    })
-}
+    function sendData() {
+      fetch('https://heyic-d4dff.firebaseio.com/posts.json', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          id: new Date().toISOString(),
+          title: titleInput.value,
+          location: locationInput.value,
+          image: 'https://firebasestorage.googleapis.com/v0/b/heyic-d4dff.appspot.com/o/MainD1D1.jpg?alt=media&token=a56e315d-9a40-44c8-b456-0de430cf36b5'
+        })
+      })
+          .then(function(res) {
+            console.log('Sent data', res);
+            updateUI();
+          })
+    }
 
-form.addEventListener('submit',function(event){
+form.addEventListener('submit', function(event) {
   event.preventDefault();
-  if(titleinput.value.trim() === '' || locationinput.value.trim() === ''){
-    alert('Please insert valid data!');
+  if (titleInput.value.trim() === '' || locationInput.value.trim() === '') {
+    alert('Please enter valid data!');
     return;
   }
   closeCreatePostModal();
-  if('serviceWorker' in navigator && 'SyncManager' in window){
+  if ('serviceWorker' in navigator && 'SyncManager' in window) {
     navigator.serviceWorker.ready
-        .then(function(sw){
-          var post ={
+        .then(function(sw) {
+          var post = {
             id: new Date().toISOString(),
-            title: titleinput.value,
-            location: locationinput.value
+            title: titleInput.value,
+            location: locationInput.value
           };
-          writeData('sync-posts',post)
-              .then(function(){
-                sw.sync.register('sync-new-posts');
+          writeData('sync-posts', post)
+              .then(function() {
+                return sw.sync.register('sync-new-posts');
               })
-              .then(function(){
+              .then(function() {
                 var snackbarContainer = document.querySelector('#confirmation-toast');
-                var data = {message:'Your Post was saved for syncing'};
+                var data = {message: 'Your Post was saved for syncing!'};
                 snackbarContainer.MaterialSnackbar.showSnackbar(data);
               })
-              .catch(function (err){
-                consolelog(err);
+              .catch(function(err) {
+                console.log(err);
               });
         });
   } else {

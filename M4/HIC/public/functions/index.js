@@ -4,8 +4,15 @@ var cors = require('cors') ({origin: true});
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
+var serviceAccount = require("./heyic-fbkey.json");
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaserURL: ('https://heyic-d4dff.firebaseio.com/')
+});
+
 exports.storePostData = functions.https.onRequest((request, response) => {
- cors(function(request,response){
+ cors(request,response,function(){
   admin.database().ref('posts').push({
    id: request.body.id,
    title: request.body.title,

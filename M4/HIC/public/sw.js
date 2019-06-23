@@ -1,7 +1,7 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v3';
+var CACHE_STATIC_NAME = 'static-v2';
 var CACHE_DYNAMIC_NAME = 'dynamic-v2';
 var STATIC_FILES = [
     '/',
@@ -185,39 +185,42 @@ self.addEventListener('fetch', function (event) {
 //     );
 // });
 
-self.addEventListener('sync', function(){
-   console.log('[Service Worker] Background syncing!',event);
-   if (event.tag === 'sync-new-posts'){
-       console.log('[Service Worker] Syncing new Posts');
-       event.waitUntil(
-           readAllData('sync-posts')
-               .then(function (data) {
-                   for ( var dt of data) {
-                       fetch('https://heyic-d4dff.firebaseio.com/posts.json', {
-                           method: 'POST',
-                           header: {
-                               'Content-Type': 'application/json',
-                               'Accept': 'application/json'
-                           },
-                           body: JSON.stringify({
-                               id: dt.id,
-                               title: dt.title,
-                               location: dt.location,
-                               image: 'https://firebasestorage.googleapis.com/v0/b/heyic-d4dff.appspot.com/o/MainD2D2.jpg?alt=media&token=ab9101e6-31ba-4af2-9b31-bec7a358a6de'
-                           })
-                       })
-                           .then(function (res) {
-                               console.log('Sent data', res);
-                               if (res.ok) {
-                                   deleteItemFromData('sync-posts', dt.id);
-                               }
-                           })
-                           .catch(function(err){
-                                   console.log('Error while sending data',err);
-                           });
-                        // updateUI();
-                   }
-               })
-       );
-   }
+self.addEventListener('sync', function(event) {
+    console.log('[Service Worker] Background syncing', event);
+    if (event.tag === 'sync-new-posts') {
+        console.log('[Service Worker] Syncing new Posts');
+        event.waitUntil(
+            readAllData('sync-posts')
+                .then(function(data) {
+                    for (var dt of data) {
+                        fetch('https://heyic-d4dff.firebaseio.com/posts.json', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id: dt.id,
+                                title: dt.title,
+                                location: dt.location,
+                                image: 'https://firebasestorage.googleapis.com/v0/b/heyic-d4dff.appspot.com/o/MainD1D1.jpg?alt=media&token=a56e315d-9a40-44c8-b456-0de430cf36b5'
+                            })
+                        })
+                            .then(function(res) {
+                                console.log('Sent data', res);
+                                if (res.ok) {
+                                    res.json()
+                                        .then(function(resData) {
+                                            deleteItemFromData('sync-posts', resData.id);
+                                        });
+                                }
+                            })
+                            .catch(function(err) {
+                                console.log('Error while sending data', err);
+                            });
+                    }
+
+                })
+        );
+    }
 });
