@@ -31,13 +31,38 @@ function displayConfirmNotification(){
             dir: 'ltr',
             lang: 'en-US', //BCP 47
             vibrate: [100,50,200],
-            badge: '/src/images/icons/app-icon-96x96.png'
+            badge: '/src/images/icons/app-icon-96x96.png',
+            tag: 'confirm-notification',
+            renotify: true,
+            actions: [
+                { action: 'confirm', title: 'Okay' , icon: '/src/images/icons/app-icon-96x96.png'},
+                { action: 'cancel', title: 'Cancel' , icon: '/src/images/icons/app-icon-96x96.png'},
+            ]
         };
         navigator.serviceWorker.ready
             .then(function(swreg){
                 swreg.showNotification('Successfully subscribed', options);
             });
     }
+}
+
+function configurePushSub(){
+    if(!('serviceWorker' in navigator)){return;} //not needed
+
+    var reg;
+    navigator.serviceWorker.ready
+        .then(function(swreg){
+            reg= swreg;
+           swreg.pushManager.getSubscription();
+        })
+        .then(function(sub){
+            if(sub === null){//creating new sub
+                reg.pushManager.subscribe({
+                    userVisibleOnly: true
+                });
+            }else{//Having a sub
+            }
+        });
 }
 
 function askForNotificationPermission(){
@@ -47,11 +72,12 @@ function askForNotificationPermission(){
             console.log('No notification permission granted');
         } else {
             //Hide Button
-            displayConfirmNotification();
+            //displayConfirmNotification();
+            configurePushSub();
         }
     });
 }
-if('Notification' in window){
+if('Notification' in window && 'serviceWorker' in navigator){
     for (var i =0; i <enableNotificationsButtons.length; i++){
         enableNotificationsButtons[i].style.display = 'inline-block';
         enableNotificationsButtons[i].addEventListener('click',askForNotificationPermission);
