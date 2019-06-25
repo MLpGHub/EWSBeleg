@@ -73,17 +73,26 @@
   border: none;
   border-radius: 15px;
   box-shadow: 0 9px #000000;
+  z-index: 1000;
+  position: fixed;
+  bottom: 0;
+  right: 0;
 
 }
 
+.D1, .D2{
+display: none;
+}
+
+
 .btn-group2 .button:not(:last-child) {
   border-bottom: none; /* Prevent double borders */
+
 }
 
 .btn-group2 .button:hover {
   background-color: #000000;
 }
-
 
 .button:active {
   background-color: #ff4081;
@@ -94,6 +103,17 @@
   max-width: 100%;
   margin: auto;
   display: block;
+}
+.left-half {
+  max-width: 100%;
+  margin: auto;
+  display: inline-block;
+}
+
+.right-half {
+  max-width: 100%;
+  margin: auto;
+  display: inline-block;
 }
 
 .floating-button {

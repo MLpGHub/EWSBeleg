@@ -1,8 +1,8 @@
 importScripts('/src/js/idb.js');
 importScripts('/src/js/utility.js');
 
-var CACHE_STATIC_NAME = 'static-v11';
-var CACHE_DYNAMIC_NAME = 'dynamic-v11';
+var CACHE_STATIC_NAME = 'static-v3';
+var CACHE_DYNAMIC_NAME = 'dynamic-v3';
 var STATIC_FILES = [
     '/',
     '/index.html',
@@ -203,7 +203,7 @@ self.addEventListener('sync', function(event) {
                         postData.append('rawLocationLng', dt.rawLocation.lng);
                         postData.append('file', dt.picture, dt.id + '.png');
 
-                        fetch('https://heyic-d4dff.firebaseio.com/posts.json', {
+                        fetch('https://heyic-d4dff.firebaseio.com/storePostData', {
                             method: 'POST',
                             body: postData
                         })

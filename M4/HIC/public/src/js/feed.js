@@ -15,6 +15,30 @@ var locationBtn = document.querySelector('#location-btn');
 var locationLoader = document.querySelector('#location-loader');
 var fetchedLocation = {lat: 0, lng: 0};
 
+
+var image_selector = document.getElementById('HL');
+var image_tracker = 'LUP';
+
+function hideIMG(){
+    document.getElementById('HL').style.visibility='hidden';
+    document.getElementById('HR').style.visibility='hidden';
+}
+function changeIMGLUp(){
+    hideIMG();
+    document.getElementById('D1').style.visibility='visible';
+}
+function changeIMGLDown(){
+    hideIMG();
+}
+function changeIMGRUp(){
+    hideIMG();
+}
+function changeIMGRDown(){
+    hideIMG();
+
+}
+
+
 locationBtn.addEventListener('click', function (event) {
     if (!('geolocation' in navigator)) {
         return;
@@ -250,14 +274,15 @@ if ('indexedDB' in window) {
 }
 
     function sendData() {
-        var id = postData = new FormData();
         var postData = new FormData();
-        postData.append('id',id);
+        var ids = new Date().toISOString();
+
+        postData.append('id',ids);
         postData.append('title',titleInput.value);
         postData.append('location',locationInput.value);
         postData.append('rawLocationLat', fetchedLocation.lat);
         postData.append('rawLocationLng', fetchedLocation.lng);
-        postData.append('file',picture,id +'.png');
+        postData.append('file',picture,ids +'.png');
       fetch('https://heyic-d4dff.firebaseio.com/posts.json', {
         method: 'POST',
         body: postData

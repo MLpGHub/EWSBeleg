@@ -81,6 +81,7 @@ exports.storePostData = functions.https.onRequest((request, response) => {
 });
 
 */
+
 var functions = require("firebase-functions");
 var admin = require("firebase-admin");
 var cors = require("cors")({ origin: true });
@@ -92,15 +93,16 @@ var os = require("os");
 var Busboy = require("busboy");
 var path = require('path');
 
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
 
-var serviceAccount = require("./heyic-fbkey.json");
+var serviceAccount = require("./heyic-fb-key.json");
 
 var gcconfig = {
-    projectId: "heyic-d4dff",
-    keyFilename: "heyic-fbkey.json"
+    projectId: 'heyic-d4dff',
+    keyFilename: 'heyic-fb-key.json'
 };
 
 var gcs = require("@google-cloud/storage")(gcconfig);
@@ -179,7 +181,10 @@ exports.storePostData = functions.https.onRequest(function(request, response) {
                                     .database()
                                     .ref("subscriptions")
                                     .once("value");
-                            })
+
+                            }).catch(error => {
+                            console.error(error);
+                        })
                             .then(function(subscriptions) {
                                 subscriptions.forEach(function(sub) {
                                     var pushConfig = {

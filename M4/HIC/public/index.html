@@ -112,17 +112,45 @@
         </form>
       </div>
     <div id="headsection">
-         <img src="/src/images/main-image.jpg"
-           srcset="/src/images/main-image-lg.jpg 1200w,
+         <div class="defaultIMG">
+           <img src="/src/images/main-image.jpg"
+                srcset="/src/images/main-image-lg.jpg 1200w,
            /src/images/main-image-sm.jpg 1000w,
            /src/images/main-image.jpg 900w"
-           alt="HeaderPic"
-           class="main-image">
+                alt="HeaderPic"
+                class="main-image">
+         </div>
+      <div id="halfs">
+        <img id="HL" src="/src/images/>HumanLeft.png"
+             srcset="/src/images/HumanLeft.png 1200w,
+           /src/images/HumanLeft.png 1000w,
+           /src/images/HumanLeft.png 900w"
+             alt="LeftHalf"
+             class="left-half">
+        <img id="HR" src="/src/images/HumanRight.png"
+             srcset="/src/images/HumanRight.png 1200w,
+           /src/images/HumanRight.png 1000w,
+           /src/images/HumanRight.png 900w"
+             alt="RightHalf"
+             class="right-half">
+        <img id="D2" src="/src/images/D2.jpg"
+             srcset="/src/images/D2.jpg 1200w,
+           /src/images/D2.jpg 1000w,
+           /src/images/D2.jpg 900w"
+             alt="RightHalf"
+             class="D2">
+        <img id="D1" src="/src/images/D1.jpg"
+             srcset="/src/images/D1.jpg 1200w,
+           /src/images/D1.jpg 1000w,
+           /src/images/D1.jpg 900w"
+             alt="RightHalf"
+             class="D1">
+      </div>
       <div class="btn-group">
-        <button class="button">Up</button>
-        <button class="button">Down</button>
-        <button class="button">Up</button>
-        <button class="button">Down</button>
+        <button class="button" onclick="changeIMGLUp();">Up</button>
+        <button class="button" onclick="changeIMGLDown();">Down</button>
+        <button class="button" onclick="changeIMGRUp();">Up</button>
+        <button class="button" onclick="changeIMGRDown();">Down</button>
       </div>
       <div class="page-content">
         <h5 class="text-center"> Have you grown old since then?<br><u>Shoot a picture of you!</u></h5>
